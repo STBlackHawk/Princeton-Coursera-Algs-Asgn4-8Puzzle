@@ -1,10 +1,13 @@
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.MinPQ;
 
+import java.util.Comparator;
+import java.util.Iterator;
+
 public class Board {
 
     private Integer dimention ;
-    private Integer haming = 0;
+    private Integer hamming = 0;
     private Integer manhattan = 0;
     private  Integer twin;
     private int[][] Board;
@@ -24,7 +27,7 @@ public class Board {
                 Board[i][j] = blocks[i][j];
 
                 if(Board[i][j] != i*blocks.length + j+1){
-                    haming++;
+                    hamming++;
                 }
 
                 if(Board[i][j] != i*blocks.length + j+1){
@@ -50,9 +53,9 @@ public class Board {
     // (where blocks[i][j] = block in row i, column j)
 
     public int dimension(){return dimention;}        // board dimension n
-    public int hamming(){return  haming;}       // number of blocks out of place
+    public int hamming(){return  hamming;}       // number of blocks out of place
     public int manhattan(){return manhattan;}                // sum of Manhattan distances between blocks and goal
-    public boolean isGoal(){return (manhattan == 0 && haming == 0);}     // is this board the goal board?
+    public boolean isGoal(){return (manhattan == 0 && hamming == 0);}     // is this board the goal board?
     public Board twin(){
 
         int[][] twinb = new int[dimention][dimention];
@@ -96,7 +99,16 @@ public class Board {
         Board sneighbor;
         Board wneighbor;
         Board eneighbor;
-        MinPQ<Board> neighbors = new MinPQ<>();
+
+
+        Comparator<Board> BoardComparator = new BoardComparator();
+        MinPQ neighbors = new MinPQ(BoardComparator);
+
+
+        public Iterator<Board> iterator(){
+            return new ;
+        }
+
 
         if(blanki!=0){
             nneighbor = new Board(this.swap(blanki-1, blankj));
@@ -115,15 +127,19 @@ public class Board {
             neighbors.insert(eneighbor);
         }
 
+        class MyIterator<Board> implements Iterator<Board> {
 
-        public boolean hasNext() {
-            neighbors.iterator().hasNext();
-        }
+            public boolean hasNext() {
+                boolean hasnext =
+                neighbors.iterator().hasNext();
+                return  hasnext;
+            }
 
-        public Board next(){
+            public Board next() {
+                Board next =
+                neighbors.iterator().next();
 
-            neighbors.iterator().next();
-
+            }
         }
 
 
@@ -139,6 +155,28 @@ public class Board {
         Board[i][j] = 0;
         return Board;
     }
+
+
+
+        private class BoardComparator implements Comparator<Board>{
+
+        @Override
+        public int compare(Board x, Board y){
+
+            if (x.manhattan() + x.hamming() < y.manhattan() + y.manhattan()){
+                return -1;
+            }else if (x.manhattan() + x.hamming() > y.manhattan() + y.manhattan()){
+                return -1;
+            }else {return 0;}
+
+        }
+
+        }
+
+
+
+
+
 
 
 }
