@@ -105,9 +105,6 @@ public class Board {
         MinPQ neighbors = new MinPQ(BoardComparator);
 
 
-        public Iterator<Board> iterator(){
-            return new ;
-        }
 
 
         if(blanki!=0){
@@ -127,26 +124,24 @@ public class Board {
             neighbors.insert(eneighbor);
         }
 
-        class MyIterator<Board> implements Iterator<Board> {
-
-            public boolean hasNext() {
-                boolean hasnext =
-                neighbors.iterator().hasNext();
-                return  hasnext;
-            }
-
-            public Board next() {
-                Board next =
-                neighbors.iterator().next();
-
-            }
-        }
-
-
+       return neighbors;
 
 
     }  // all neighboring boards
-    public String toString()              {} // string representation of this board (in the output format specified below)
+    public String toString() {
+        String B;
+       B = Integer.toString(Board.length);
+
+        for (int i = 0; i< Board.length;i++){
+            B = B +"\n";
+            for (int j = 0; j< Board.length; j++){
+               B = B +  " "+Integer.toString(Board[i][j]);
+            }
+
+        }
+        return B;
+
+    } // string representation of this board (in the output format specified below)
 
     public static void main(String[] args) {}// unit tests (not graded)
 
