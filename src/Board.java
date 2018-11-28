@@ -10,9 +10,7 @@ public class Board {
     private Integer dimention ;
     private Integer hamming = 0;
     private Integer manhattan = 0;
-    private  Integer twin;
     private int[][] Board;
-    private int[][] twinb;
     private int blanki;
     private int blankj;
 
@@ -22,7 +20,6 @@ public class Board {
 
         dimention = blocks.length;
         Board = new int[blocks.length][blocks.length];
-        twinb = blocks;
 
         for(int i = 0; i < blocks.length; i++){
             for (int j = 0; j<blocks.length; j++ ){
@@ -62,7 +59,13 @@ public class Board {
     }     // is this board the goal board?
 
     public Board twin(){
-
+        int[][] twinb = new int[dimention][dimention];
+        int twin;
+        for(int i=0;i<dimention;i++){
+            for(int j=0; j<dimention; j++){
+                twinb[i][j] = Board[i][j];
+            }
+        }
         ;
         Board twinBoard;
         int Rand = StdRandom.uniform(2);
@@ -98,7 +101,7 @@ public class Board {
 
     } // a board that is obtained by exchanging any pair of blocks
     public boolean equals(Object y){
-        this.Board == y.
+        return y.equals(Board);
     }   // does this board equal y?
 
     public Iterable<Board> neighbors(){
