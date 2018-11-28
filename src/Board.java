@@ -1,8 +1,9 @@
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.MinPQ;
+import java.lang.Math;
 
 import java.util.Comparator;
-import java.util.Iterator;
+
 
 public class Board {
 
@@ -11,6 +12,7 @@ public class Board {
     private Integer manhattan = 0;
     private  Integer twin;
     private int[][] Board;
+    private int[][] twinb;
     private int blanki;
     private int blankj;
 
@@ -20,28 +22,29 @@ public class Board {
 
         dimention = blocks.length;
         Board = new int[blocks.length][blocks.length];
+        twinb = blocks;
 
         for(int i = 0; i < blocks.length; i++){
             for (int j = 0; j<blocks.length; j++ ){
 
                 Board[i][j] = blocks[i][j];
+                if(Board[i][j] != 0){
 
-                if(Board[i][j] != i*blocks.length + j+1){
-                    hamming++;
-                }
+                    if (Board[i][j] != i * blocks.length + j + 1) {
+                        hamming++;
+                    }
 
-                if(Board[i][j] != i*blocks.length + j+1){
-                    int distance;
-                    int quotint = Board[i][j] / blocks.length;
-                    int remainder = Board[i][j] % blocks.length;
+                    if (Board[i][j] != i * blocks.length + j + 1) {
+                        int distance;
+                        int quotint = Math.abs((i * blocks.length + j + 1) - Board[i][j]) / blocks.length;
+                        int remainder = Math.abs((i * blocks.length + j + 1) - Board[i][j]) % blocks.length;
 
-                    distance = quotint + remainder;
+                        distance = quotint + remainder;
 
-                    manhattan = manhattan + distance;
+                        manhattan = manhattan + distance;
 
-                }
-
-                if (Board[i][j] == 0){
+                    }
+                } else {
                     blanki = i;
                     blankj = j;
                 }
@@ -56,9 +59,10 @@ public class Board {
     public int hamming(){return  hamming;}       // number of blocks out of place
     public int manhattan(){return manhattan;}                // sum of Manhattan distances between blocks and goal
     public boolean isGoal(){return (manhattan == 0 && hamming == 0);}     // is this board the goal board?
+
     public Board twin(){
 
-        int[][] twinb = new int[dimention][dimention];
+        ;
         Board twinBoard;
         int Rand = StdRandom.uniform(2);
         int randi = StdRandom.uniform(dimention);
@@ -67,20 +71,20 @@ public class Board {
         twin = twinb[randi][randj];
 
         if(Rand == 0) {
-            if (randi != dimention - 1) {
+            if (randi != dimention - 1 && twinb[randi][randj]!= 0) {
                 twinb[randi][randj] = twinb[randi + 1][randj];
                 twinb[randi + 1][randj] = twin;
 
-            } else {
+            } else if (twinb[randi][randj]!= 0){
                 twinb[randi][randj] = twinb[randi - 1][randj];
                 twinb[randi - 1][randj] = twin;
             }
         } else{
-            if (randj != dimention - 1) {
+            if (randj != dimention - 1 && twinb[randi][randj]!= 0) {
                 twinb[randi][randj] = twinb[randi][randj+1];
                 twinb[randi][randj+1] = twin;
 
-            } else {
+            } else if(twinb[randi][randj]!= 0) {
                 twinb[randi][randj] = twinb[randi][randj-1];
                 twinb[randi][randj-1] = twin;
             }
@@ -95,6 +99,7 @@ public class Board {
     public boolean equals(Object y){return y.equals(Board);}   // does this board equal y?
 
     public Iterable<Board> neighbors(){
+
         Board nneighbor;
         Board sneighbor;
         Board wneighbor;
@@ -108,19 +113,23 @@ public class Board {
 
 
         if(blanki!=0){
-            nneighbor = new Board(this.swap(blanki-1, blankj));
+            nneighbor = this;
+            nneighbor.swap(blanki-1, blankj);
             neighbors.insert(nneighbor);
         }
         if(blankj!=0){
-            wneighbor = new Board(this.swap(blanki, blankj-1));
+            wneighbor = this;
+            wneighbor.swap(blanki, blankj-1);
             neighbors.insert(wneighbor);
         }
         if(blanki != dimention-1){
-            sneighbor = new Board(this.swap(blanki+1, blankj));
+            sneighbor = this;
+            sneighbor.swap(blanki+1, blankj);
             neighbors.insert(sneighbor);
         }
         if(blankj != dimention-1){
-            eneighbor= new Board(this.swap(blanki, blankj+1));
+            eneighbor = this;
+            eneighbor.swap(blanki, blankj+1);
             neighbors.insert(eneighbor);
         }
 
@@ -145,28 +154,27 @@ public class Board {
 
     public static void main(String[] args) {}// unit tests (not graded)
 
-    private int[][] swap(int i, int j){
-        Board[blankj][blankj] = Board[i][j];
-        Board[i][j] = 0;
-        return Board;
+    private Board swap(int i, int j){
+        int[][] swapBoard = Board;
+        int temp = swapBoard[blanki][blankj];
+        swapBoard[blankj][blankj] = swapBoard[i][j];
+        swapBoard[i][j] = temp;
+        blanki = i;
+        blankj = j;
+        return new Board(swapBoard);
     }
 
 
 
-        private class BoardComparator implements Comparator<Board>{
+    private class BoardComparator implements Comparator<Board>{
 
         @Override
         public int compare(Board x, Board y){
+           return Integer.compare(x.manhattan(), y.manhattan());
 
-            if (x.manhattan() + x.hamming() < y.manhattan() + y.manhattan()){
-                return -1;
-            }else if (x.manhattan() + x.hamming() > y.manhattan() + y.manhattan()){
-                return -1;
-            }else {return 0;}
+            }
 
-        }
-
-        }
+    }
 
 
 
