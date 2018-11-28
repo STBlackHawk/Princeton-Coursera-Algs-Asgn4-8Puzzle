@@ -58,7 +58,8 @@ public class Board {
     public int dimension(){return dimention;}        // board dimension n
     public int hamming(){return  hamming;}       // number of blocks out of place
     public int manhattan(){return manhattan;}                // sum of Manhattan distances between blocks and goal
-    public boolean isGoal(){return (manhattan == 0 && hamming == 0);}     // is this board the goal board?
+    public boolean isGoal(){return (manhattan == 0 && hamming == 0);
+    }     // is this board the goal board?
 
     public Board twin(){
 
@@ -96,7 +97,9 @@ public class Board {
 
 
     } // a board that is obtained by exchanging any pair of blocks
-    public boolean equals(Object y){return y.equals(Board);}   // does this board equal y?
+    public boolean equals(Object y){
+        this.Board == y.
+    }   // does this board equal y?
 
     public Iterable<Board> neighbors(){
 
@@ -113,23 +116,19 @@ public class Board {
 
 
         if(blanki!=0){
-            nneighbor = this;
-            nneighbor.swap(blanki-1, blankj);
+            nneighbor = this.swap(blanki-1, blankj);
             neighbors.insert(nneighbor);
         }
         if(blankj!=0){
-            wneighbor = this;
-            wneighbor.swap(blanki, blankj-1);
+            wneighbor = this.swap(blanki, blankj-1);
             neighbors.insert(wneighbor);
         }
         if(blanki != dimention-1){
-            sneighbor = this;
-            sneighbor.swap(blanki+1, blankj);
+            sneighbor = this.swap(blanki+1, blankj);
             neighbors.insert(sneighbor);
         }
         if(blankj != dimention-1){
-            eneighbor = this;
-            eneighbor.swap(blanki, blankj+1);
+            eneighbor = this.swap(blanki, blankj+1);
             neighbors.insert(eneighbor);
         }
 
@@ -155,12 +154,21 @@ public class Board {
     public static void main(String[] args) {}// unit tests (not graded)
 
     private Board swap(int i, int j){
-        int[][] swapBoard = Board;
-        int temp = swapBoard[blanki][blankj];
-        swapBoard[blankj][blankj] = swapBoard[i][j];
+        int[][] swapBoard = new int[dimention][dimention];
+        int bi = 0;
+        int bj = 0;
+        for (int k=0;k<dimention;k++ ){
+            for (int m =0; m<dimention; m++){
+                swapBoard[k][m] = Board[k][m];
+                if (swapBoard[k][m]== 0){
+                    bi=k;
+                    bj=m;
+                }
+            }
+        }
+        int temp = swapBoard[bi][bj];
+        swapBoard[bi][bj] = swapBoard[i][j];
         swapBoard[i][j] = temp;
-        blanki = i;
-        blankj = j;
         return new Board(swapBoard);
     }
 
@@ -176,10 +184,9 @@ public class Board {
 
     }
 
-
-
-
-
+    private int[][] blocks(){
+        return Board;
+    }
 
 
 }

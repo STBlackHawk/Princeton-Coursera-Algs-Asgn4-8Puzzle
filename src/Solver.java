@@ -38,39 +38,45 @@ public class Solver {
        Node search = new Node(initial);
        Node searchTwin = new Node(initial.twin());
 
+       mainlog.push(initial);
         if(search.searchNode.isGoal()){mainlog.add(search.searchNode);}
-
-        while (!search.searchNode.isGoal()|| !searchTwin.searchNode.isGoal()){
-            mainlog.push(search.searchNode);
-            if(search.predecessor == null ||
-                    !search.predecessor.searchNode.equals(search.searchNode.neighbors().iterator().next())){
+        while (!search.searchNode.isGoal() && !searchTwin.searchNode.isGoal()) {
+            if (search.predecessor == null ||
+                    !search.predecessor.searchNode.equals(search.searchNode.neighbors().iterator().next())) {
                 search = search.nextSearch(search.searchNode.neighbors().iterator().next());
+                mainlog.push(search.searchNode);
 
-
-            } else{
+            } else {
                 search.searchNode.neighbors().iterator().next();
                 search = search.nextSearch(search.searchNode.neighbors().iterator().next());
+                mainlog.push(search.searchNode);
             }
             noOfMoves++;
 
-            twinlog.push(search.searchNode);
-            if(searchTwin.predecessor == null ||
-                    !searchTwin.predecessor.searchNode.equals(searchTwin.searchNode.neighbors().iterator().next())) {
-                 searchTwin = searchTwin.nextSearch(searchTwin.searchNode.neighbors().iterator().next());
 
+            if (searchTwin.predecessor == null) {
+                searchTwin = searchTwin.nextSearch(searchTwin.searchNode.neighbors().iterator().next());
+                twinlog.push(search.searchNode);
+            } else {
+                Board temp = searchTwin.searchNode.neighbors().iterator().next();
+                if (searchTwin.predecessor.searchNode != temp) {
+                    searchTwin = searchTwin.nextSearch(searchTwin.searchNode.neighbors().iterator().next());
+                    twinlog.push(search.searchNode);
+                } else {
 
-            } else{
-                searchTwin.searchNode.neighbors().iterator().next();
-               searchTwin = searchTwin.nextSearch(search.searchNode.neighbors().iterator().next());
+                    searchTwin.searchNode.neighbors().iterator().next();
+                    temp = search.searchNode.neighbors().iterator().next();
+                    searchTwin = searchTwin.nextSearch(temp);
+                    twinlog.push(search.searchNode);
+                }
+
             }
-
-
         }
 
 
 
     }         // find a solution to the initial board (using the A* algorithm)
-    public boolean isSolvable()     {
+    public boolean isSolvable(){
         boolean isSolvable = false;
         if(mainlog.peek().isGoal()){
            isSolvable = true;
