@@ -3,6 +3,8 @@ import edu.princeton.cs.algs4.MinPQ;
 import java.lang.Math;
 
 import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.Queue;
 
 
 public class Board {
@@ -13,6 +15,7 @@ public class Board {
     private int[][] Board;
     private int blanki;
     private int blankj;
+    private Queue<Board> neighbors  = new LinkedList<Board>();
 
     public Board(int[][] blocks)  {
 
@@ -60,49 +63,70 @@ public class Board {
 
     public Board twin(){
         int[][] twinb = new int[dimention][dimention];
-        int twin;
+        int twin1 = 0;
+        int twin2 = 0;
+        Board twinBoard;
+        int twin1bi = 0;
+        int twin1bj = 0;
+        int twin2bi = 0;
+        int twin2bj = 0;
+
+        int temptwin = 0;
         for(int i=0;i<dimention;i++){
             for(int j=0; j<dimention; j++){
                 twinb[i][j] = Board[i][j];
+                if (twinb[i][j] != i * dimention + j + 1){
+                    twin1bi = i;
+                    twin1bj = j;
+                }
             }
         }
         ;
-        Board twinBoard;
-        int Rand = StdRandom.uniform(2);
-        int randi = StdRandom.uniform(dimention);
-        int randj = StdRandom.uniform(dimention);
 
-        twin = twinb[randi][randj];
 
-        if(Rand == 0) {
-            if (randi != dimention - 1 && twinb[randi][randj]!= 0) {
-                twinb[randi][randj] = twinb[randi + 1][randj];
-                twinb[randi + 1][randj] = twin;
 
-            } else if (twinb[randi][randj]!= 0){
-                twinb[randi][randj] = twinb[randi - 1][randj];
-                twinb[randi - 1][randj] = twin;
-            }
-        } else{
-            if (randj != dimention - 1 && twinb[randi][randj]!= 0) {
-                twinb[randi][randj] = twinb[randi][randj+1];
-                twinb[randi][randj+1] = twin;
-
-            } else if(twinb[randi][randj]!= 0) {
-                twinb[randi][randj] = twinb[randi][randj-1];
-                twinb[randi][randj-1] = twin;
-            }
-
+        while (twin1 == 0){
+            twin1bi = StdRandom.uniform(dimention);
+            twin1bj = StdRandom.uniform(dimention);
+            twin1 = twinb[twin1bi][twin1bj];
         }
+
+        while (twin2 == 0 || twin2 == twin1){
+            twin2bi = StdRandom.uniform(dimention);
+            twin2bj = StdRandom.uniform(dimention);
+            twin2 = twinb[twin2bi][twin2bj];
+        }
+
+
+        temptwin = twinb[twin1bi][twin1bj];
+        twinb[twin1bi][twin1bj] = twinb[twin2bi][twin2bj];
+        twinb[twin2bi][twin2bj] = temptwin;
+
+
+
 
         twinBoard = new Board(twinb);
         return twinBoard;
 
 
     } // a board that is obtained by exchanging any pair of blocks
-    public boolean equals(Object y){
-        return y.equals(Board);
-    }   // does this board equal y?
+    public boolean equals(Object y) {
+        if (y instanceof Board) {
+            Board b = (Board) y;
+            for (int i=0; i<dimention;i++){
+                for (int j =0; j<dimention; j++){
+                    if(b.Board[i][j]!= this.Board[i][j]){
+                        return false;
+                    }
+                }
+
+            }
+            return true;
+        } else {
+
+            return false;
+        }
+    }// does this board equal y?
 
     public Iterable<Board> neighbors(){
 
@@ -112,27 +136,21 @@ public class Board {
         Board eneighbor;
 
 
-        Comparator<Board> BoardComparator = new BoardComparator();
-        MinPQ neighbors = new MinPQ(BoardComparator);
-
-
-
-
         if(blanki!=0){
             nneighbor = this.swap(blanki-1, blankj);
-            neighbors.insert(nneighbor);
+            neighbors.add(nneighbor);
         }
         if(blankj!=0){
             wneighbor = this.swap(blanki, blankj-1);
-            neighbors.insert(wneighbor);
+            neighbors.add(wneighbor);
         }
         if(blanki != dimention-1){
             sneighbor = this.swap(blanki+1, blankj);
-            neighbors.insert(sneighbor);
+            neighbors.add(sneighbor);
         }
         if(blankj != dimention-1){
             eneighbor = this.swap(blanki, blankj+1);
-            neighbors.insert(eneighbor);
+            neighbors.add(eneighbor);
         }
 
        return neighbors;
@@ -177,19 +195,7 @@ public class Board {
 
 
 
-    private class BoardComparator implements Comparator<Board>{
 
-        @Override
-        public int compare(Board x, Board y){
-           return Integer.compare(x.manhattan(), y.manhattan());
-
-            }
-
-    }
-
-    private int[][] blocks(){
-        return Board;
-    }
 
 
 }
