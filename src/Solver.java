@@ -30,6 +30,7 @@ public class Solver {
     }
 
     public Solver(Board initial)  {
+       noOfMoves = 0;
 
        Node search = new Node(initial, null);
        Node searchTwin = new Node(initial.twin(), null);
@@ -102,7 +103,9 @@ public class Solver {
         return isSolvable;
 
     }       // is the initial board solvable?
-    public int moves(){return noOfMoves;}      // min number of moves to solve initial board; -1 if unsolvable
+    public int moves(){if(isSolvable()){
+        return noOfMoves;
+    }else{return -1;}      // min number of moves to solve initial board; -1 if unsolvable
     public Iterable<Board> solution()  {
         return mainlog;
     }    // sequence of boards in a shortest solution; null if unsolvable

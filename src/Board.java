@@ -104,20 +104,22 @@ public class Board {
 
     public boolean equals(Object y) {
         boolean e = true;
-        Board b = (Board) y;
-        if (b!=null && this.dimention.equals(b.dimention)) {
-            for (int i=0; i<dimention;i++){
-                for (int j =0; j<dimention; j++){
-                    if(b.Board[i][j]!= this.Board[i][j]){
-                        e = false;
+        if(y instanceof Board) {
+            Board b = (Board) y;
+            if (this.dimention.equals(b.dimention)) {
+                for (int i = 0; i < dimention; i++) {
+                    for (int j = 0; j < dimention; j++) {
+                        if (b.Board[i][j] != this.Board[i][j]) {
+                            e = false;
+                        }
                     }
+
                 }
+            } else {
 
+                e = false;
             }
-        } else {
-
-            e = false;
-        }
+        }else {e = false;}
         return e;
     }// does this board equal y?
 
