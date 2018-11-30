@@ -12,33 +12,32 @@ public class Solver {
    private boolean isSolvable;
    private int noOfMoves;
    private Comparator<Board> BoardComparator = new BoardComparator();
-   private MinPQ<Board> neighbors = new MinPQ(BoardComparator);
+   private MinPQ<Node> neighbors = new MinPQ<>();
 
-   public class Node{
+   private class Node implements Comparable<Node>{
         Board searchNode ;
         Node predecessor;
 
 
-        private  Node(Board board){
+        private  Node(Board board, Node predecessor){
           this.searchNode = board;
-          this.predecessor = null;
+          this.predecessor = predecessor;
 
 
         }
 
-        private  Node nextSearch(Board board){
-        Node nextSearch = new Node(board);
-        nextSearch.predecessor = this;
-        return  nextSearch;
-        }
+       @Override
+       public int compareTo(Node o) {
+            return Integer.compare(this.searchNode.manhattan(), o.searchNode.manhattan());
 
+       }
 
     }
 
     public Solver(Board initial)  {
 
-       Node search = new Node(initial);
-       Node searchTwin = new Node(initial.twin());
+       Node search = new Node(initial, null);
+       Node searchTwin = new Node(initial.twin(), null);
 
        mainlog.push(initial);
         if(search.searchNode.isGoal()){mainlog.add(search.searchNode);}
@@ -46,8 +45,8 @@ public class Solver {
 
             Queue<Board> queue = (Queue<Board>) search.searchNode.neighbors();
             for (Board Board : queue){
-
-                neighbors.insert(Board);
+                Node temp = new Node(Board, search);
+                neighbors.insert(temp);
             }
 //
 //            while (!queue.isEmpty()){
@@ -60,12 +59,12 @@ public class Solver {
 //            Board temptwin =tempItertwin.next();
 
             if (search.predecessor == null ||
-                    !search.predecessor.searchNode.equals(neighbors.min())) {
-                search = search.nextSearch(neighbors.min());
+                    !search.predecessor.searchNode.equals(neighbors.min().searchNode)) {
+                search = neighbors.min();
                 mainlog.push(search.searchNode);
             } else {
                 neighbors.delMin();
-                search = search.nextSearch(neighbors.min());
+                search = neighbors.min();
                 mainlog.push(search.searchNode);
             }
             noOfMoves++;
@@ -75,16 +74,17 @@ public class Solver {
             }
 
             Queue<Board> queuetwin = (Queue<Board>) searchTwin.searchNode.neighbors();
-            while (!queuetwin.isEmpty()){
-                neighbors.insert(queuetwin.remove());
+            for (Board Board : queuetwin){
+                Node temp = new Node(Board, searchTwin);
+                neighbors.insert(temp);
             }
             if (searchTwin.predecessor == null ||
-                    !searchTwin.predecessor.searchNode.equals(neighbors.min())) {
-                searchTwin = searchTwin.nextSearch(neighbors.min());
+                    !searchTwin.predecessor.searchNode.equals(neighbors.min().searchNode)) {
+                searchTwin = neighbors.min();
                 twinlog.push(searchTwin.searchNode);
             } else {
                 neighbors.delMin();
-                searchTwin = searchTwin.nextSearch(neighbors.min());
+                searchTwin = neighbors.min();
                 twinlog.push(searchTwin.searchNode);
             }
 
@@ -142,7 +142,7 @@ public class Solver {
 
         if(!solver.isSolvable()) StdOut.println("No Solution is Available");
         else{
-            StdOut.println("Minimum number of moves"+solver.moves());
+            StdOut.println("Minimum number of moves "+solver.moves());
             for(Board board: solver.solution()){
                 StdOut.println(board);
             }
