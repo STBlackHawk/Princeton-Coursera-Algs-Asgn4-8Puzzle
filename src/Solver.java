@@ -112,27 +112,27 @@ public class Solver {
         return mainlog;
     }    // sequence of boards in a shortest solution; null if unsolvable
     public static void main(String[] args)throws FileNotFoundException {
-//        In in = new In(args[0]);
-//        int lenght = in.readInt();
-//        int[][] blocks = new int[lenght][lenght];
-//        for(int i=0; i<lenght;i++){
-//            for(int j=0; j<lenght; j++){
-//                blocks[i][j] = in.readInt();
-//            }
-//        }
-
-        File file = new File(args[0]);
-
-        Scanner in = new Scanner(file);
-
-        int lenght = in.nextInt();
+        In in = new In(args[0]);
+        int lenght = in.readInt();
         int[][] blocks = new int[lenght][lenght];
-
         for(int i=0; i<lenght;i++){
             for(int j=0; j<lenght; j++){
-                blocks[i][j] = in.nextInt();
+                blocks[i][j] = in.readInt();
             }
         }
+
+//        File file = new File(args[0]);
+//
+//        Scanner in = new Scanner(file);
+//
+//        int lenght = in.nextInt();
+//        int[][] blocks = new int[lenght][lenght];
+//
+//        for(int i=0; i<lenght;i++){
+//            for(int j=0; j<lenght; j++){
+//                blocks[i][j] = in.nextInt();
+//            }
+//        }
 
 
 
