@@ -1,47 +1,42 @@
 import edu.princeton.cs.algs4.StdRandom;
-import edu.princeton.cs.algs4.MinPQ;
 import java.lang.Math;
-
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Queue;
 
 
 public class Board {
 
-    private Integer dimention ;
+    private Integer dimention;
     private Integer hamming = 0;
     private Integer manhattan = 0;
     private int[][] Board;
     private int blanki;
     private int blankj;
-    private Queue<Board> neighbors  = new LinkedList<Board>();
+    private Board twin;
 
     public Board(int[][] blocks)  {
 
         if (blocks == null){throw new IllegalArgumentException();}
 
         dimention = blocks.length;
-        Board = new int[blocks.length][blocks.length];
+        Board = new int[dimention][dimention];
 
-        for(int i = 0; i < blocks.length; i++){
-            for (int j = 0; j<blocks.length; j++ ){
+        for(int i = 0; i < dimention; i++){
+            for (int j = 0; j<dimention; j++ ){
 
                 Board[i][j] = blocks[i][j];
                 if(Board[i][j] != 0){
 
-                    if (Board[i][j] != i * blocks.length + j + 1) {
+                    if (Board[i][j] != i * dimention + j + 1) {
                         hamming++;
                     }
 
-                    if (Board[i][j] != i * blocks.length + j + 1) {
-                        int distance;
-                        int quotint = Math.abs((i * blocks.length + j + 1) - Board[i][j]) / blocks.length;
-                        int remainder = Math.abs((i * blocks.length + j + 1) - Board[i][j]) % blocks.length;
+                    if (Board[i][j] != i * dimention + j + 1) {
+                        ;
+                        int quotint = Math.abs(i - (Board[i][j]-1) / dimention);
+                        int remainder = Math.abs(j -(Board[i][j]-1) % dimention);
 
-                        distance = quotint + remainder;
-
-                        manhattan = manhattan + distance;
+                        manhattan += quotint + remainder;
 
                     }
                 } else {
@@ -62,79 +57,76 @@ public class Board {
     }     // is this board the goal board?
 
     public Board twin(){
-        int[][] twinb = new int[dimention][dimention];
-        int twin1 = 0;
-        int twin2 = 0;
-        Board twinBoard;
-        int twin1bi = 0;
-        int twin1bj = 0;
-        int twin2bi = 0;
-        int twin2bj = 0;
+        if (twin == null) {
+            int[][] twinb = new int[dimention][dimention];
+            int twin1 = 0;
+            int twin2 = 0;
+            int twin1bi = 0;
+            int twin1bj = 0;
+            int twin2bi = 0;
+            int twin2bj = 0;
 
-        int temptwin = 0;
-        for(int i=0;i<dimention;i++){
-            for(int j=0; j<dimention; j++){
-                twinb[i][j] = Board[i][j];
-                if (twinb[i][j] != i * dimention + j + 1){
-                    twin1bi = i;
-                    twin1bj = j;
+            int temptwin = 0;
+            for (int i = 0; i < dimention; i++) {
+                for (int j = 0; j < dimention; j++) {
+                    twinb[i][j] = Board[i][j];
+                    if (twinb[i][j] != i * dimention + j + 1) {
+                        twin1bi = i;
+                        twin1bj = j;
+                    }
                 }
             }
+
+            while (twin1 == 0) {
+                twin1bi = StdRandom.uniform(dimention);
+                twin1bj = StdRandom.uniform(dimention);
+                twin1 = twinb[twin1bi][twin1bj];
+            }
+
+            while (twin2 == 0 || twin2 == twin1) {
+                twin2bi = StdRandom.uniform(dimention);
+                twin2bj = StdRandom.uniform(dimention);
+                twin2 = twinb[twin2bi][twin2bj];
+            }
+
+
+            temptwin = twinb[twin1bi][twin1bj];
+            twinb[twin1bi][twin1bj] = twinb[twin2bi][twin2bj];
+            twinb[twin2bi][twin2bj] = temptwin;
+
+            twin = new Board(twinb);
         }
-        ;
+            return twin;
 
-
-
-        while (twin1 == 0){
-            twin1bi = StdRandom.uniform(dimention);
-            twin1bj = StdRandom.uniform(dimention);
-            twin1 = twinb[twin1bi][twin1bj];
-        }
-
-        while (twin2 == 0 || twin2 == twin1){
-            twin2bi = StdRandom.uniform(dimention);
-            twin2bj = StdRandom.uniform(dimention);
-            twin2 = twinb[twin2bi][twin2bj];
-        }
-
-
-        temptwin = twinb[twin1bi][twin1bj];
-        twinb[twin1bi][twin1bj] = twinb[twin2bi][twin2bj];
-        twinb[twin2bi][twin2bj] = temptwin;
-
-
-
-
-        twinBoard = new Board(twinb);
-        return twinBoard;
 
 
     } // a board that is obtained by exchanging any pair of blocks
+
     public boolean equals(Object y) {
-        if (y instanceof Board) {
-            Board b = (Board) y;
+        boolean e = true;
+        Board b = (Board) y;
+        if (b!=null && this.dimention.equals(b.dimention)) {
             for (int i=0; i<dimention;i++){
                 for (int j =0; j<dimention; j++){
                     if(b.Board[i][j]!= this.Board[i][j]){
-                        return false;
+                        e = false;
                     }
                 }
 
             }
-            return true;
         } else {
 
-            return false;
+            e = false;
         }
+        return e;
     }// does this board equal y?
 
     public Iterable<Board> neighbors(){
-
+        Queue<Board> neighbors  = new LinkedList<Board>();
         Board nneighbor;
         Board sneighbor;
         Board wneighbor;
         Board eneighbor;
-
 
         if(blanki!=0){
             nneighbor = this.swap(blanki-1, blankj);
@@ -154,8 +146,6 @@ public class Board {
         }
 
        return neighbors;
-
-
     }  // all neighboring boards
     public String toString() {
         String B;
@@ -192,10 +182,5 @@ public class Board {
         swapBoard[i][j] = temp;
         return new Board(swapBoard);
     }
-
-
-
-
-
 
 }

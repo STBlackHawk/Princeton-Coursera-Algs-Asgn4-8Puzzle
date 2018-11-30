@@ -1,19 +1,14 @@
+
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.StdOut;
+import java.util.Stack;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.*;
 
 public class Solver {
    private Stack<Board> mainlog = new Stack<>();
-   private Stack<Board> twinlog = new Stack<>();
-   private boolean isSolvable;
+//   private Stack<Board> twinlog = new Stack<>();
    private int noOfMoves;
-   private Comparator<Board> BoardComparator = new BoardComparator();
-   private MinPQ<Node> neighbors = new MinPQ<>();
-
    private class Node implements Comparable<Node>{
         Board searchNode ;
         Node predecessor;
@@ -43,7 +38,8 @@ public class Solver {
         if(search.searchNode.isGoal()){mainlog.add(search.searchNode);}
         while (!search.searchNode.isGoal() && !searchTwin.searchNode.isGoal()) {
 
-            Queue<Board> queue = (Queue<Board>) search.searchNode.neighbors();
+            Iterable<Board> queue =  search.searchNode.neighbors();
+            MinPQ<Node> neighbors = new MinPQ<>();
             for (Board Board : queue){
                 Node temp = new Node(Board, search);
                 neighbors.insert(temp);
@@ -73,7 +69,7 @@ public class Solver {
                 neighbors.delMin();
             }
 
-            Queue<Board> queuetwin = (Queue<Board>) searchTwin.searchNode.neighbors();
+            Iterable<Board> queuetwin = searchTwin.searchNode.neighbors();
             for (Board Board : queuetwin){
                 Node temp = new Node(Board, searchTwin);
                 neighbors.insert(temp);
@@ -81,11 +77,10 @@ public class Solver {
             if (searchTwin.predecessor == null ||
                     !searchTwin.predecessor.searchNode.equals(neighbors.min().searchNode)) {
                 searchTwin = neighbors.min();
-                twinlog.push(searchTwin.searchNode);
+
             } else {
                 neighbors.delMin();
                 searchTwin = neighbors.min();
-                twinlog.push(searchTwin.searchNode);
             }
 
             while(!neighbors.isEmpty()){
@@ -111,7 +106,7 @@ public class Solver {
     public Iterable<Board> solution()  {
         return mainlog;
     }    // sequence of boards in a shortest solution; null if unsolvable
-    public static void main(String[] args)throws FileNotFoundException {
+    public static void main(String[] args){
         In in = new In(args[0]);
         int lenght = in.readInt();
         int[][] blocks = new int[lenght][lenght];
@@ -135,8 +130,6 @@ public class Solver {
 //        }
 
 
-
-
         Board initial = new Board(blocks);
         Solver solver = new Solver(initial);
 
@@ -150,16 +143,6 @@ public class Solver {
 
     }// solve a slider puzzle (given below)
 
-
-    private class BoardComparator implements Comparator<Board>{
-
-        @Override
-        public int compare(Board x, Board y){
-            return Integer.compare(x.manhattan(), y.manhattan());
-
-        }
-
-    }
 
 
 }
