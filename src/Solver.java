@@ -7,33 +7,38 @@ import java.util.Stack;
 
 public class Solver {
    private Stack<Board> mainlog;
-//   private Stack<Board> twinlog = new Stack<>();
-   private int noOfMoves;
+
+
    private class Node implements Comparable<Node>{
         Board searchNode ;
         Node predecessor;
+        int noOfMoves = 0;
 
 
         private  Node(Board board, Node predecessor){
           this.searchNode = board;
           this.predecessor = predecessor;
+          this.noOfMoves = predecessor.noOfMoves +1;
 
 
         }
 
        @Override
        public int compareTo(Node o) {
-            return Integer.compare(this.searchNode.manhattan(), o.searchNode.manhattan());
+            if(this.searchNode.manhattan() > o.searchNode.manhattan()){ return +1;}
+            if(this.searchNode.manhattan() < o.searchNode.manhattan()){ return -1;}
+            else return 0;
 
        }
 
     }
+    private Node search;
 
     public Solver(Board initial)  {
-       noOfMoves = 0;
+
        mainlog = new Stack<>();
 
-       Node search = new Node(initial, null);
+        search = new Node(initial, null);
        Node searchTwin = new Node(initial.twin(), null);
 
 
@@ -67,11 +72,9 @@ public class Solver {
                     search = neighbors.min();
                     mainlog.push(search.searchNode);
                 }
-                noOfMoves++;
 
-                while (!neighbors.isEmpty()) {
-                    neighbors.delMin();
-                }
+
+                neighbors = new MinPQ<>();
 
                 Iterable<Board> queuetwin = searchTwin.searchNode.neighbors();
                 for (Board Board : queuetwin) {
@@ -87,9 +90,6 @@ public class Solver {
                     searchTwin = neighbors.min();
                 }
 
-                while (!neighbors.isEmpty()) {
-                    neighbors.delMin();
-                }
 
 
             }
@@ -107,15 +107,12 @@ public class Solver {
 
     }       // is the initial board solvable?
     public int moves() {
-        if (this.isSolvable()) {
-            return noOfMoves;
-        } else {
-            return -1;
-        }
+
+        return this.isSolvable() ? search.noOfMoves :-1;
+
     }// min number of moves to solve initial board; -1 if unsolvable
 
     public Iterable<Board> solution(){
-
        return mainlog;
 
     }    // sequence of boards in a shortest solution; null if unsolvable

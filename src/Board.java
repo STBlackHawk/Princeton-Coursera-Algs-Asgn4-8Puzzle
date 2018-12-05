@@ -21,6 +21,7 @@ public class Board {
         dimention = blocks.length;
         Board = new int[dimention][dimention];
 
+
         for(int i = 0; i < dimention; i++){
             for (int j = 0; j<dimention; j++ ){
 
