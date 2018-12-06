@@ -1,5 +1,6 @@
 import edu.princeton.cs.algs4.StdRandom;
 import java.lang.Math;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -7,7 +8,6 @@ import java.util.Queue;
 public class Board {
 
     private Integer dimention;
-    private Integer hamming = 0;
     private Integer manhattan = 0;
     private int[][] Board;
     private int blanki;
@@ -24,21 +24,14 @@ public class Board {
 
         for(int i = 0; i < dimention; i++){
             for (int j = 0; j<dimention; j++ ){
-
                 Board[i][j] = blocks[i][j];
                 if(Board[i][j] != 0){
-
-                    if (Board[i][j] != i * dimention + j + 1) {
-                        hamming++;
-                    }
-
                     if (Board[i][j] != i * dimention + j + 1) {
                         ;
                         int quotint = Math.abs(i - (Board[i][j]-1) / dimention);
                         int remainder = Math.abs(j -(Board[i][j]-1) % dimention);
 
                         manhattan += quotint + remainder;
-
                     }
                 } else {
                     blanki = i;
@@ -52,10 +45,14 @@ public class Board {
     // (where blocks[i][j] = block in row i, column j)
 
     public int dimension(){return dimention;}        // board dimension n
-    public int hamming(){return  hamming;}       // number of blocks out of place
+    public int hamming(){
+        int hamming = 0;
+        for (int i = 0; i<dimention; i++ )
+            for (int j = 0; j <dimention; j++)
+                if (Board[i][j] != i * dimention + j + 1 && Board[i][j]!= 0) hamming++;
+        return hamming;}       // number of blocks out of place
     public int manhattan(){return manhattan;}                // sum of Manhattan distances between blocks and goal
-    public boolean isGoal(){return (manhattan == 0 && hamming == 0);
-    }     // is this board the goal board?
+    public boolean isGoal(){return (manhattan == 0);}     // is this board the goal board?
 
     public Board twin(){
         if (twin == null) {
@@ -97,31 +94,18 @@ public class Board {
 
             twin = new Board(twinb);
         }
-            return twin;
+        return twin;
 
 
 
     } // a board that is obtained by exchanging any pair of blocks
 
     public boolean equals(Object y) {
-        boolean e = true;
-        if(y instanceof Board) {
-            Board b = (Board) y;
-            if (this.dimention.equals(b.dimention)) {
-                for (int i = 0; i < dimention; i++) {
-                    for (int j = 0; j < dimention; j++) {
-                        if (b.Board[i][j] != this.Board[i][j]) {
-                            e = false;
-                        }
-                    }
-
-                }
-            } else {
-
-                e = false;
-            }
-        }else {e = false;}
-        return e;
+        boolean e ;
+        if(!(y instanceof Board)) {return false;}
+        Board b = (Board) y;
+        if (!this.dimention.equals(b.dimention)) { return false;}
+        return Arrays.deepEquals(this.Board, b.Board);
     }// does this board equal y?
 
     public Iterable<Board> neighbors(){
@@ -148,16 +132,16 @@ public class Board {
             neighbors.add(eneighbor);
         }
 
-       return neighbors;
+        return neighbors;
     }  // all neighboring boards
     public String toString() {
         String B;
-       B = Integer.toString(Board.length);
+        B = Integer.toString(Board.length);
 
         for (int i = 0; i< Board.length;i++){
             B = B +"\n";
             for (int j = 0; j< Board.length; j++){
-               B = B +  " "+Integer.toString(Board[i][j]);
+                B = B +  " "+Integer.toString(Board[i][j]);
             }
 
         }
